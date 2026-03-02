@@ -99,10 +99,6 @@ export default function SharedDashboardLayout() {
 
                             <span className="font-bold text-white text-lg">{user.year}</span>
                         </div>
-                        <div>
-                            <h1 className="font-bold text-lg tracking-tight text-gray-900">{user.year} Panel</h1>
-                            <p className="text-xs text-gray-500">Workspace</p>
-                        </div>
                     </div>
 
                     <div className="mb-6">
@@ -176,8 +172,6 @@ export default function SharedDashboardLayout() {
                                 <p className="text-sm font-medium truncate text-gray-900">{user?.name}</p>
                                 <p className="text-xs text-gray-500 truncate">{user?.email}</p>
 
-                                <p className="text-sm font-medium truncate text-gray-900">{user.name}</p>
-                                <p className="text-xs text-gray-500 truncate">{user.email}</p>
                             </div>
                         </div>
                         <button
