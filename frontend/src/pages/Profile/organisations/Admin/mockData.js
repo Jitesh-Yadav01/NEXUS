@@ -11,33 +11,7 @@ export const profileData = {
   bannerText: 'HACKATHON RAT',
   bio: 'AIT CSE 27`/Open Source Contributor / GDG Lead@AIT Pune',
   clubs: [
-    {
-      id: 'c1',
-      name: 'Google Developer Groups (GDG)',
-      role: 'Secretary',
-      logo: '/clublogos/google-developers.svg',
-      description: 'To create a strong community of student developers and connect them across the globe.',
-      whatsapp: 'https://chat.whatsapp.com/gdg',
-      telegram: 'https://t.me/gdg'
-    },
-    {
-      id: 'c2',
-      name: 'Open Source Software (OSS)',
-      role: 'Technical Head',
-      logo: '/clublogos/oss.svg',
-      description: 'An open-source organization aiming to promote open source culture in India and spread knowledge nationwide.',
-      whatsapp: 'https://chat.whatsapp.com/oss',
-      telegram: 'https://t.me/oss'
-    },
-    {
-      id: 'c3',
-      name: 'Entrepreneurship Cell (E-Cell)',
-      role: 'Sponsorship Head',
-      logo: '/clublogos/ecell.svg',
-      description: 'Driving the Innovations and Entrepreneurship culture in AIT.',
-      whatsapp: 'https://chat.whatsapp.com/ecell',
-      telegram: 'https://t.me/ecell'
-    }
+   
   ]
 };
 

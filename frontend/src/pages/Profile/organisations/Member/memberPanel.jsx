@@ -14,9 +14,14 @@ const MemberPanel = () => {
     //     setCurrentView('se-dashboard');
     //     localStorage.setItem('se_dashboard_active', 'true');
     // }, [setCurrentView]);
+    const selectedClub = location.state?.club;
+
+    const clubs = selectedClub
+        ? [{ id: selectedClub.abbr, name: selectedClub.name, abbr: selectedClub.abbr, logo: selectedClub.img, role: 'Member' }]
+        : profileData.clubs;
 
     const initialData = {
-        profile: profileData,
+        profile: { ...profileData, clubs },
         members: membersData,
         tasks: tasksData,
         messages: messagesData,

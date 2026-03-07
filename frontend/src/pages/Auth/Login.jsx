@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
@@ -11,6 +11,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const selectedClub = location.state?.club || null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +33,7 @@ const Login = () => {
               setTimeout(() => navigate("/"), 2000);
               return data.message || "Login successfully! (Redirecting to home) 👌";
             }
-            setTimeout(() => navigate(`/profile/${data.user.year}`), 2000);
+            setTimeout(() => navigate(`/profile/${data.user.year}`, { state: { club: selectedClub } }), 2000);
             return data.message || "Login successfully! 👌";
           },
         },
@@ -49,7 +51,7 @@ const Login = () => {
     toast.success("Logged in with Google! 👌");
     setTimeout(() => {
       if (user?.year) {
-        navigate(`/profile/${user.year}`);
+        navigate(`/profile/${user.year}`, { state: { club: selectedClub } });
       } else {
         navigate("/");
       }

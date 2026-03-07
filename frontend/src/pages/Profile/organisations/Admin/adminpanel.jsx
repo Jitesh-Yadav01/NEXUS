@@ -14,9 +14,14 @@ const AdminPanel = () => {
     //     setCurrentView('te-dashboard');
     //     localStorage.setItem('te_dashboard_active', 'true');
     // }, [setCurrentView]);
+    const selectedClub = location.state?.club;
+
+    const clubs = selectedClub
+        ? [{ id: selectedClub.abbr, name: selectedClub.name, abbr: selectedClub.abbr, logo: selectedClub.img, role: 'Admin' }]
+        : profileData.clubs;
 
     const initialData = {
-        profile: profileData,
+        profile: { ...profileData, clubs },
         members: membersData,
         tasks: tasksData,
         messages: messagesData,

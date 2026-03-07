@@ -49,7 +49,7 @@ export function Navbar({ onOpenLogin, onOpenSidebar, isSidebarOpen }) {
         // { label: 'Team', href: 'https://www.gdgaitpune.me/',target:'_blank' },
         { label: 'Developers', href: '/developers' },
         { type: 'search', placeholder: 'Search...' },
-        { label: 'Login', href:'/login'},
+        { label: 'Login', href:'/get-started'},
         { label: 'Connect', href:'/connect'}
         // { 
         //     label: (
