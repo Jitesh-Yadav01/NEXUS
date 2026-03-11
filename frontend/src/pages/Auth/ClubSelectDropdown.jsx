@@ -1,11 +1,31 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown, Search, CheckCircle2 } from "lucide-react";
+import { ChevronDown, Search, CheckCircle2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const ClubSelectDropdown = ({ clubs, selectedClub, onSelect }) => {
+const ClubSelectDropdown = ({ selectedClub, onSelect }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [clubs, setClubs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const dropdownRef = useRef(null);
+
+  // Fetch organisations from API
+  useEffect(() => {
+    const API = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+    fetch(`${API}/api/admin/get-org`, { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("get-org response:", data);
+        const list = Array.isArray(data) ? data : (data.organisations || data.clubs || data.data || []);
+        setClubs(list);
+      })
+      .catch((err) => {
+        console.error("Failed to load organisations", err);
+        setError("Could not load organisations.");
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   // Close when clicking outside
   useEffect(() => {
@@ -26,7 +46,7 @@ const ClubSelectDropdown = ({ clubs, selectedClub, onSelect }) => {
   const selectedClubDetails = clubs.find((c) => c.name === selectedClub);
 
   return (
-    <div className="relative w-full" ref={dropdownRef}>
+    <div className="relative w-full" ref={dropdownRef} style={{ zIndex: 50 }}>
       {/* Target button */}
       <button
         type="button"
@@ -38,7 +58,12 @@ const ClubSelectDropdown = ({ clubs, selectedClub, onSelect }) => {
             : "border-white/10 hover:border-white/20 bg-white/5 text-white"
         )}
       >
-        {selectedClubDetails ? (
+        {loading ? (
+          <span className="flex items-center gap-2 text-slate-400">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading organisations...
+          </span>
+        ) : selectedClubDetails ? (
           <div className="flex items-center gap-3">
             <img
               src={selectedClubDetails.logo || "/clublogos/default.svg"}
@@ -51,7 +76,9 @@ const ClubSelectDropdown = ({ clubs, selectedClub, onSelect }) => {
             <span className="text-white font-medium">{selectedClubDetails.name}</span>
           </div>
         ) : (
-          <span className="text-slate-400">Choose a club or board...</span>
+          <span className="text-slate-400">
+            {error ? error : "Choose a club or board..."}
+          </span>
         )}
         <ChevronDown
           className={cn(
@@ -61,9 +88,9 @@ const ClubSelectDropdown = ({ clubs, selectedClub, onSelect }) => {
         />
       </button>
 
-      {/* Dropdown body */}
+      {/* Dropdown body — absolute so it doesn't affect card height */}
       {isOpen && (
-        <div className="w-full mt-2 mb-4 bg-[#111] border border-white/10 rounded-xl overflow-hidden animate-in fade-in duration-150">
+        <div className="absolute left-0 right-0 top-full mt-2 bg-[#111] border border-white/10 rounded-xl overflow-hidden animate-in fade-in duration-150" style={{ zIndex: 100 }}>
           <div className="p-2 border-b border-white/10">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />

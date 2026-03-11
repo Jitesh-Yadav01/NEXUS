@@ -10,6 +10,8 @@ import AvailableForms from './AvailableForms';
 import { LayoutDashboard, Users, CheckSquare, MessageSquare, LogOut, Menu, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 export default function SharedDashboardLayout({ children }) {
     const { activeTab, setActiveTab, profile, role } = useProfile();
@@ -28,10 +30,24 @@ export default function SharedDashboardLayout({ children }) {
         };
     }, []);
 
-    const handleLogout = () => {
-        logout();
+    const handleLogout = async () => {
         setIsSidebarOpen(false);
-        navigate('/');
+        const API = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+        try {
+            await toast.promise(
+                axios.post(`${API}/api/admin/logout`, {}, { withCredentials: true }),
+                {
+                    pending: 'Signing out...',
+                    success: 'Signed out successfully! 👋',
+                    error: 'Logout request failed, signing out anyway.',
+                }
+            );
+        } catch (_) {
+            // fail silently — still navigate home
+        } finally {
+            logout();
+            navigate('/');
+        }
     };
 
     const tabs = [
