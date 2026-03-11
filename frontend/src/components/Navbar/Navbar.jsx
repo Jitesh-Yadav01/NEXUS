@@ -98,13 +98,15 @@ export function Navbar({ onOpenLogin, onOpenSidebar, isSidebarOpen }) {
 
                         {/* Desktop Actions */}
                         <div className="hidden md:flex items-center gap-2 lg:gap-3">
-                            <a href="/get-started"><Button
-                                variant="ghost"
-                                className="text-gray-300 hover:text-white hover:bg-white/10 rounded-full px-4 lg:px-5 font-medium whitespace-nowrap"
-                                onClick={onOpenLogin}
-                            >
-                                Login
-                            </Button></a>
+                            <Link to="/get-started">
+                                <Button
+                                    variant="ghost"
+                                    className="text-gray-300 hover:text-white hover:bg-white/10 rounded-full px-4 lg:px-5 font-medium whitespace-nowrap"
+                                    onClick={onOpenLogin}
+                                >
+                                    Login
+                                </Button>
+                            </Link>
 
                             <Link to="/connect" className="inline-flex items-center justify-center h-10 px-4 lg:px-5 rounded-full bg-white text-black font-semibold hover:bg-gray-200 transition-colors shadow-lg whitespace-nowrap">
                                 Connect
