@@ -136,10 +136,10 @@ export default function SharedDashboardLayout({ children }) {
                 <div className="flex flex-col h-full p-6">
                     <div className="flex items-center gap-3 mb-8">
                         <div className="h-10 w-10 rounded-lg bg-gray-900 flex items-center justify-center shadow-sm">
-                            <span className="font-bold text-white text-lg">{user?.year[0]}</span>
+                            <span className="font-bold text-white text-lg">{role === 'Admin' ? 'A' : user?.year?.[0]}</span>
                         </div>
                         <div>
-                            <h1 className="font-bold text-lg tracking-tight text-gray-900">{user?.year} Panel</h1>
+                            <h1 className="font-bold text-lg tracking-tight text-gray-900">{role === 'Admin' ? 'Admin' : user?.year} Panel</h1>
 
                             {/* <span className="font-bold text-gray-900 text-lg">{user.year}</span> */}
                         </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/context/AuthContext";
+
 
 const API = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 
@@ -13,7 +13,6 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [loadingForms, setLoadingForms] = useState(true);
   const [loadingResponses, setLoadingResponses] = useState(false);
-  const { user, authLoading } = useAuth();
 
   useEffect(() => {
     document.body.classList.add('no-custom-cursor');
@@ -26,13 +25,8 @@ const Dashboard = () => {
   );
 
   useEffect(() => {
-    if (authLoading) return;
-    if (user && user.year?.toLowerCase() === 'admin') {
-      fetchForms();
-    } else {
-      setLoadingForms(false);
-    }
-  }, [authLoading, user]);
+    fetchForms();
+  }, []);
 
   useEffect(() => {
     if (selectedFormId) fetchResponses(selectedFormId);
@@ -41,7 +35,7 @@ const Dashboard = () => {
   const fetchForms = async () => {
     setLoadingForms(true);
     try {
-      const res = await fetch(`${API}/api/forms/get-user-forms`, { credentials: 'include' });
+      const res = await fetch(`${API}/api/forms/get-club-forms`, { credentials: 'include' });
       const json = await res.json();
       if (json.success && Array.isArray(json.forms) && json.forms.length > 0) {
         setForms(json.forms);
@@ -72,27 +66,6 @@ const Dashboard = () => {
     }
   };
 
-  if (authLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600" />
-          <p className="text-sm text-gray-500">Checking authorization...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user || user.year?.toLowerCase() !== 'admin') {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="bg-white p-8 rounded-xl shadow-sm border text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-2">Not Authorized</h2>
-          <p className="text-gray-600">Only Admin Panel members can view form responses.</p>
-        </div>
-      </div>
-    );
-  }
 
   const columns = selectedForm?.fields || [];
 

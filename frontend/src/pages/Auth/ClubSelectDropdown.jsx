@@ -114,7 +114,7 @@ const ClubSelectDropdown = ({ selectedClub, onSelect }) => {
                     <button
                       type="button"
                       onClick={() => {
-                        onSelect(club.name);
+                        onSelect(club);
                         setIsOpen(false);
                         setSearchQuery("");
                       }}

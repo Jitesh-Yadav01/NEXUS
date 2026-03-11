@@ -11,7 +11,7 @@ const API = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
 const AuthSelection = () => {
   const navigate = useNavigate();
-  const { user, authLoading, isAdmin } = useAuth();
+  const { user, setUser, authLoading, isAdmin, checkAdminAuth } = useAuth();
   const [selectedClub, setSelectedClub] = useState("");
   const [showClubSelect, setShowClubSelect] = useState(false);
   const [role, setRole] = useState("admin"); // "admin" | "member"
@@ -63,18 +63,27 @@ const AuthSelection = () => {
       await toast.promise(
         axios.post(
           `${API}/api/admin/login`,
-          { club: selectedClub, email, password },
+          { club: selectedClub?.name || selectedClub, email, password },
           { withCredentials: true }
-        ).then((res) => {
+        ).then(async (res) => {
           if (res.data?.success === false) {
             throw Object.assign(new Error(res.data?.message || "Login failed"), { response: res });
           }
+          
+          const adminInfo = await checkAdminAuth();
+          if (adminInfo) {
+            setUser(adminInfo);
+          }
+          
           return res;
         }),
         {
           pending: "Logging in...",
           success: {
             render({ data }) {
+              if (selectedClub && typeof selectedClub === 'object') {
+                localStorage.setItem("enteredClub", JSON.stringify(selectedClub));
+              }
               setTimeout(() => navigate("/profile/Admin"), 1500);
               return data?.data?.message || "Logged in successfully! 👌";
             },
@@ -171,7 +180,7 @@ const AuthSelection = () => {
                   Organisation
                 </label>
                 <ClubSelectDropdown
-                  selectedClub={selectedClub}
+                  selectedClub={selectedClub?.name || selectedClub}
                   onSelect={setSelectedClub}
                 />
               </div>

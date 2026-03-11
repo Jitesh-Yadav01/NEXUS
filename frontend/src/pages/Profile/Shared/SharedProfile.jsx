@@ -237,7 +237,6 @@ const SharedProfile = () => {
                         <div className="ml-6 mt-12 flex-1">
                             <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
                             <p className="text-gray-500 text-sm">{user.role}</p>
-                            <p className="text-gray-500 text-sm">{user.year}</p>
                         </div>
                     </div>
 
@@ -259,7 +258,7 @@ const SharedProfile = () => {
                         <div className="space-y-4">
                             <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider">Bio</h3>
                             <p className="text-sm text-gray-600 leading-relaxed">
-                                {user.bio}
+                                {user.bio || (user.role === 'Admin' ? `Administrator for ${user.year || profile.clubs?.[0]?.name || 'the organization'}.` : 'No bio available.')}
                             </p>
                         </div>
                     </div>
@@ -283,10 +282,10 @@ const SharedProfile = () => {
                                     {club.name}
                                 </h3>
                                 <p className="text-sm font-medium text-blue-600 mt-1 mb-2">
-                                    {club.role}
+                                    {club.role || user.role}
                                 </p>
                                 <p className="text-sm text-gray-500 leading-snug">
-                                    {club.description}
+                                    {club.description || (user.role === 'Admin' ? 'Managing organization settings and members.' : '')}
                                 </p>
                             </div>
 

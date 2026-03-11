@@ -33,21 +33,31 @@ export const AuthProvider = ({ children }) => {
 
   const checkAdminAuth = async () => {
     try {
-      const res = await fetch(`${API}/api/forms/get-club-forms`, {
+      const res = await fetch(`${API}/api/admin/get-admin-info`, {
         method: 'GET',
         credentials: 'include',
       });
       const data = await res.json();
-      return data.success === true;
+      if (data.success) {
+        return data.data;
+      }
+      return null;
     } catch {
-      return false;
+      return null;
     }
   };
 
   useEffect(() => {
     const init = async () => {
-      const [userData, adminResult] = await Promise.all([checkAuth(), checkAdminAuth()]);
-      if (adminResult) setIsAdmin(true);
+      const [userData, adminData] = await Promise.all([checkAuth(), checkAdminAuth()]);
+      if (adminData) {
+        setIsAdmin(true);
+        if (!userData) {
+          setUser(adminData);
+        } else {
+          setUser({ ...userData, club: adminData.club });
+        }
+      }
       setAuthLoading(false);
     };
     init();
@@ -199,10 +209,12 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
     value={{
         user,
+        setUser,
         authLoading,
         isAdmin,
         isAuthenticated: !!user,
         checkAuth,
+        checkAdminAuth,
         login,
         signUp,
         logout,
