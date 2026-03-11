@@ -83,7 +83,7 @@ svg {
 }
 
 body {
-  background: #000000;
+  background: #0d1117;
   font-family:
     Inter,
     system-ui,
@@ -109,6 +109,13 @@ body {
     display: none;
   }
 }
+
+@keyframes spin-border {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 
 .site-container {
   width: 100%;

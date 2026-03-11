@@ -7,11 +7,12 @@ import Shuffle from "./Shuffle";
 import TextType from './TextType';
 import CurvedLoop from '@/components/ui/CurvedLoop';
 import Beams from './Beams';
+import { FeatureGrid } from './FeatureGrid';
 
 export default function Home() {
   return (
     <section className="relative px-6 pt-32 pb-32 md:pt-48 md:pb-40 text-center overflow-hidden max-w-[100vw]">
-        <div className="absolute inset-0 -z-10 h-full w-full bg-black">
+        <div className="absolute inset-0 -z-10 h-full w-full bg-transparent">
              <Beams
                beamWidth={3}
                beamHeight={30}
@@ -71,13 +72,13 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.4 }}
               className="flex flex-row items-center justify-center gap-0 mt-5"
           >
-            <Button asChild size="lg" className="h-14 rounded-full px-10 text-lg bg-blue-600 hover:bg-blue-500 text-white border-0 shadow-[0_0_30px_-10px_rgba(37,99,235,0.6)] transition-all hover:scale-105 active:scale-95 duration-300 group">
+            <Button variant="default" asChild size="lg" className="h-14 rounded-full px-10 text-lg bg-blue-600 hover:bg-blue-500 text-white border-0 shadow-[0_0_30px_-10px_rgba(37,99,235,0.6)] transition-all hover:scale-105 active:scale-95 duration-300 group">
               <Link to="/clubs">
                 Explore Clubs <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
             
-             <Button asChild size="lg" className="h-14 rounded-full bg-transparent hover:bg-white/10 border border-white/10 text-white ml-2" style={{ width: '200px' }}>
+             <Button variant="outline" asChild size="lg" className="h-14 rounded-full bg-transparent hover:bg-white/10 border border-white/10 text-white ml-2" style={{ width: '200px' }}>
                   <a href="https://github.com/Jitesh-Yadav01/SYNC-AIT" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 transition-colors">
                       <Github className="h-5 w-5 shrink-0" />
                       <span className="text-lg font-large">Star on GitHub</span>
@@ -102,6 +103,8 @@ export default function Home() {
         </motion.div>
 
       </div>
+      
+      <FeatureGrid />
     </section>
   );
 }

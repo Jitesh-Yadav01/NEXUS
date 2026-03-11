@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { publicRoutes } from "./Routes/PublicRoutes.jsx";
 import { protectedRoutes } from "./Routes/ProtectedRoutes.jsx";
 import SideBar from "./components/Navbar/SideBar";
+import { Footer } from "./components/Footer/Footer";
 
 function AppContent({ isSidebarOpen, setIsSidebarOpen }) {
   const routing = useRoutes([...publicRoutes, ...protectedRoutes]);
@@ -27,6 +28,7 @@ function AppContent({ isSidebarOpen, setIsSidebarOpen }) {
         <main className="main">
           {routing}
         </main>
+        <Footer />
       </div>
     </div>
   );
