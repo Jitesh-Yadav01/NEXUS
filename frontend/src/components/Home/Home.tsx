@@ -8,6 +8,7 @@ import TextType from './TextType';
 import CurvedLoop from '@/components/ui/CurvedLoop';
 import Beams from './Beams';
 import { FeatureGrid } from './FeatureGrid';
+import { ClubStackSection } from './ClubStackSection';
 import { Footer } from '../Footer/Footer';
 
 export default function Home() {
@@ -74,7 +75,7 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="flex flex-row items-center justify-center gap-0 mt-5"
           >
-            <Button variant="default" asChild size="lg" className="h-14 rounded-full px-10 text-lg bg-blue-600 hover:bg-blue-500 text-white border-0 shadow-[0_0_30px_-10px_rgba(37,99,235,0.6)] transition-all hover:scale-105 active:scale-95 duration-300 group">
+            <Button variant="default" asChild size="lg" className="h-14 rounded-full px-10 text-lg bg-blue-600 hover:bg-blue-500 text-white border-0 shadow-[0_0_30px_-10_rgba(37,99,235,0.6)] transition-all hover:scale-105 active:scale-95 duration-300 group">
               <Link to="/clubs">
                 Explore Clubs <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Link>
@@ -107,6 +108,7 @@ export default function Home() {
       </div>
     </section>
     <FeatureGrid />
+    <ClubStackSection />
     <Footer />
     </>
   );
