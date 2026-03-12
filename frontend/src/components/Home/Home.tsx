@@ -9,6 +9,7 @@ import CurvedLoop from '@/components/ui/CurvedLoop';
 import Beams from './Beams';
 import { FeatureGrid } from './FeatureGrid';
 import { ClubStackSection } from './ClubStackSection';
+import { EventCodeBlock } from './EventCodeBlock';
 import { Footer } from '../Footer/Footer';
 
 export default function Home() {
@@ -109,6 +110,7 @@ export default function Home() {
     </section>
     <FeatureGrid />
     <ClubStackSection />
+    <EventCodeBlock />
     <Footer />
     </>
   );

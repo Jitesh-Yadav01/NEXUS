@@ -37,10 +37,10 @@ const features = [
 
 export function FeatureGrid() {
   return (
-    <section className="py-24 px-6 sm:px-8 max-w-[1200px] mx-auto w-full relative z-10 font-mono">
+    <section className="py-12 px-6 sm:px-8 max-w-[1200px] mx-auto w-full relative z-10 font-mono">
       
       {/* Section Header */}
-      <div className="mb-12 md:mb-16 mt-16 md:mt-24">
+      <div className="mb-10 md:mb-12 mt-8 md:mt-12">
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-4">
           Think fast. <br className="hidden sm:block" />
           <span className="text-gray-400">Connect faster.</span>
