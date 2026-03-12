@@ -26,6 +26,43 @@ export const ProfileProvider = ({ children, initialData, role }) => {
     const [activeClub, setActiveClub] = useState(profile.clubs?.[0] || null);
     // const { setCurrentView } = useView();
 
+    useEffect(() => {
+        setProfile(initialData.profile);
+        setMembers(initialData.members);
+        setTasks(initialData.tasks);
+        setMessages(initialData.messages);
+        setNotifications(initialData.notifications);
+    }, [initialData]);
+
+    useEffect(() => {
+        const requestedClub = location.state?.club;
+
+        if (requestedClub && profile.clubs?.length) {
+            const matchedClub = profile.clubs.find(club =>
+                club.id === requestedClub.id ||
+                club._id === requestedClub._id ||
+                club.name === requestedClub.name
+            );
+
+            if (matchedClub) {
+                setActiveClub(matchedClub);
+                return;
+            }
+        }
+
+        if (!activeClub && profile.clubs?.length) {
+            setActiveClub(profile.clubs[0]);
+            return;
+        }
+
+        if (activeClub && profile.clubs?.length) {
+            const stillExists = profile.clubs.some(club => club.id === activeClub.id);
+            if (!stillExists) {
+                setActiveClub(profile.clubs[0]);
+            }
+        }
+    }, [location.state, profile.clubs, activeClub]);
+
     const clubTasks = tasks.filter(t => t.clubId === activeClub?.id);
     const clubMembers = members.filter(m => {
         return true;

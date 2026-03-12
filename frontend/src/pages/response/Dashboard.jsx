@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import { useProfile } from '@/pages/Profile/Shared/ProfileContext';
 
 import DashboardHeader from './DashboardHeader';
 import ApplicantCard from './review/ApplicantCard';
@@ -9,7 +12,12 @@ import { toast } from 'react-toastify';
 const API = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 import { Search, Star, MessageSquare, Trophy, Plus } from 'lucide-react';
 
-const Dashboard = () => {
+const Dashboard = ({ viewerRole = 'admin' }) => {
+   const location = useLocation();
+   const navigate = useNavigate();
+   const { formId: routeFormId } = useParams();
+   const { user } = useAuth();
+   const { activeClub } = useProfile();
   const [forms, setForms] = useState([]);
   const [selectedFormId, setSelectedFormId] = useState("");
   const [responses, setResponses] = useState([]);
@@ -20,6 +28,8 @@ const Dashboard = () => {
   const [selectedResponseId, setSelectedResponseId] = useState(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [updatingDecision, setUpdatingDecision] = useState(false);
+   const isAdminView = viewerRole === 'admin';
+   const responseBasePath = isAdminView ? '/admin/responses' : '/member/responses';
 
   useEffect(() => {
     document.body.classList.add('no-custom-cursor');
@@ -31,27 +41,88 @@ const Dashboard = () => {
     [forms, selectedFormId]
   );
 
-  useEffect(() => {
-    fetchForms();
-  }, []);
+   const currentClubName = useMemo(() => {
+      if (location.state?.club?.name) {
+         return location.state.club.name;
+      }
+
+      if (activeClub?.name) {
+         return activeClub.name;
+      }
+
+      if (user?.club?.name) {
+         return user.club.name;
+      }
+
+      if (Array.isArray(user?.clubs) && user.clubs.length > 0) {
+         return user.clubs[0]?.name || '';
+      }
+
+      try {
+         const saved = localStorage.getItem('enteredClub');
+         return saved ? JSON.parse(saved).name : '';
+      } catch {
+         return '';
+      }
+   }, [activeClub?.name, location.state, user?.club?.name, user?.clubs]);
 
   useEffect(() => {
-    if (selectedFormId) fetchResponses(selectedFormId);
-  }, [selectedFormId]);
+      fetchForms(currentClubName);
+   }, [currentClubName, routeFormId]);
 
-  const fetchForms = async () => {
+  useEffect(() => {
+      if (!selectedFormId) {
+         setResponses([]);
+         setSelectedResponseId(null);
+         return;
+      }
+
+      if (routeFormId !== selectedFormId) {
+         navigate(`${responseBasePath}/${selectedFormId}`, {
+            replace: true,
+            state: { club: activeClub || location.state?.club }
+         });
+      }
+
+      fetchResponses(selectedFormId);
+  }, [selectedFormId, activeClub, location.state]);
+
+   useEffect(() => {
+      if (!routeFormId || routeFormId === selectedFormId) {
+         return;
+      }
+
+      setSelectedFormId(routeFormId);
+   }, [routeFormId]);
+
+  const fetchForms = async (clubName) => {
     setLoadingForms(true);
     try {
-      const res = await fetch(`${API}/api/forms/get-club-forms`, { credentials: 'include' });
+         const params = isAdminView && clubName ? `?club=${encodeURIComponent(clubName)}` : '';
+         console.log('[fetchForms] viewerRole:', viewerRole, '| clubName:', clubName, '| params:', params);
+         const res = await fetch(`${API}/api/forms/get-club-forms${params}`, { credentials: 'include' });
       const json = await res.json();
-      if (json.success && Array.isArray(json.forms) && json.forms.length > 0) {
+      console.log('[fetchForms] response:', json);
+      if (json.success && Array.isArray(json.forms)) {
         setForms(json.forms);
-        setSelectedFormId(json.forms[0]._id);
+        if (json.forms.length > 0) {
+            const nextFormId = json.forms.some((form) => form._id === routeFormId)
+               ? routeFormId
+               : json.forms[0]._id;
+            setSelectedFormId(nextFormId);
+        } else {
+            setSelectedFormId("");
+        }
       } else {
         setForms([]);
+            setSelectedFormId("");
+        if (!json.success) {
+          toast.error(json.message || 'Failed to load forms');
+        }
       }
     } catch (err) {
-      console.error(err);
+      console.error('[fetchForms] network error:', err);
+      toast.error('Network error loading forms');
     } finally {
       setLoadingForms(false);
     }
@@ -84,6 +155,10 @@ const Dashboard = () => {
   };
 
   const handleUpdateDecision = async (responseId, newDecision) => {
+         if (!isAdminView) {
+            return;
+         }
+
       setUpdatingDecision(true);
       try {
         const res = await fetch(`${API}/api/response/update-decision`, {
@@ -339,32 +414,34 @@ const Dashboard = () => {
                                    {currentDecision === 'reviewLater' ? 'Review Later' : currentDecision}
                                  </div>
                                </div>
-                               <div className="flex gap-2 mt-1">
-                                  <button 
-                                     onClick={() => handleUpdateDecision(selectedApplicant._id, 'accepted')}
-                                     disabled={updatingDecision || currentDecision === 'accepted'}
-                                     className={`inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:pointer-events-none disabled:opacity-50 h-9 px-4 py-2
-                                        ${currentDecision === 'accepted' ? 'bg-slate-900 text-slate-50 shadow hover:bg-slate-900/90' : 'border border-slate-200 bg-white shadow-sm hover:bg-slate-100 hover:text-slate-900 text-slate-900'}`}
-                                  >
-                                     Accept
-                                  </button>
-                                  <button 
-                                     onClick={() => handleUpdateDecision(selectedApplicant._id, 'reviewLater')}
-                                     disabled={updatingDecision || currentDecision === 'reviewLater'}
-                                     className={`inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:pointer-events-none disabled:opacity-50 h-9 px-4 py-2
-                                        ${currentDecision === 'reviewLater' ? 'bg-slate-900 text-slate-50 shadow hover:bg-slate-900/90' : 'border border-slate-200 bg-white shadow-sm hover:bg-slate-100 hover:text-slate-900 text-slate-900'}`}
-                                  >
-                                     Hold
-                                  </button>
-                                  <button 
-                                     onClick={() => handleUpdateDecision(selectedApplicant._id, 'rejected')}
-                                     disabled={updatingDecision || currentDecision === 'rejected'}
-                                     className={`inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:pointer-events-none disabled:opacity-50 h-9 px-4 py-2
-                                        ${currentDecision === 'rejected' ? 'bg-slate-900 text-slate-50 shadow hover:bg-slate-900/90' : 'border border-slate-200 bg-white shadow-sm hover:bg-slate-100 hover:text-slate-900 text-slate-900'}`}
-                                  >
-                                     Reject
-                                  </button>
-                               </div>
+                               {isAdminView && (
+                                 <div className="flex gap-2 mt-1">
+                                    <button 
+                                       onClick={() => handleUpdateDecision(selectedApplicant._id, 'accepted')}
+                                       disabled={updatingDecision || currentDecision === 'accepted'}
+                                       className={`inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:pointer-events-none disabled:opacity-50 h-9 px-4 py-2
+                                          ${currentDecision === 'accepted' ? 'bg-slate-900 text-slate-50 shadow hover:bg-slate-900/90' : 'border border-slate-200 bg-white shadow-sm hover:bg-slate-100 hover:text-slate-900 text-slate-900'}`}
+                                    >
+                                       Accept
+                                    </button>
+                                    <button 
+                                       onClick={() => handleUpdateDecision(selectedApplicant._id, 'reviewLater')}
+                                       disabled={updatingDecision || currentDecision === 'reviewLater'}
+                                       className={`inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:pointer-events-none disabled:opacity-50 h-9 px-4 py-2
+                                          ${currentDecision === 'reviewLater' ? 'bg-slate-900 text-slate-50 shadow hover:bg-slate-900/90' : 'border border-slate-200 bg-white shadow-sm hover:bg-slate-100 hover:text-slate-900 text-slate-900'}`}
+                                    >
+                                       Hold
+                                    </button>
+                                    <button 
+                                       onClick={() => handleUpdateDecision(selectedApplicant._id, 'rejected')}
+                                       disabled={updatingDecision || currentDecision === 'rejected'}
+                                       className={`inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 disabled:pointer-events-none disabled:opacity-50 h-9 px-4 py-2
+                                          ${currentDecision === 'rejected' ? 'bg-slate-900 text-slate-50 shadow hover:bg-slate-900/90' : 'border border-slate-200 bg-white shadow-sm hover:bg-slate-100 hover:text-slate-900 text-slate-900'}`}
+                                    >
+                                       Reject
+                                    </button>
+                                 </div>
+                               )}
                             </div>
                          </div>
 

@@ -15,7 +15,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 
 export default function SharedDashboardLayout({ children }) {
-    const { activeTab, setActiveTab, profile, role } = useProfile();
+    const { activeTab, setActiveTab, profile, role, activeClub } = useProfile();
     const { logout, user, authLoading } = useAuth();
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile
@@ -67,6 +67,9 @@ export default function SharedDashboardLayout({ children }) {
         }
         if (role === 'Admin') {
             return tabs.filter(t => t.id !== 'profile' && t.id !== 'my-clubs');
+        }
+        if (role === 'Member') {
+            return tabs.filter(t => ['overview', 'tasks', 'messages', 'my-clubs'].includes(t.id));
         }
         return tabs.filter(t => t.id !== 'profile');
     };
@@ -207,7 +210,7 @@ export default function SharedDashboardLayout({ children }) {
                                 <button
                                     onClick={() => {
                                         setIsSidebarOpen(false);
-                                        navigate('/response');
+                                        navigate('/admin/responses');
                                     }}
                                     className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group relative overflow-hidden text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                                 >
@@ -217,8 +220,21 @@ export default function SharedDashboardLayout({ children }) {
                             </>
                         )}
 
-                        {/* Applicant / Member can see & fill public forms */}
-                        {role !== 'Admin' && (
+                        {role === 'Member' && (
+                            <button
+                                onClick={() => {
+                                    setIsSidebarOpen(false);
+                                    navigate('/member/responses', { state: { club: activeClub } });
+                                }}
+                                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group relative overflow-hidden text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                            >
+                                <Users className="h-5 w-5 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                                Responses
+                            </button>
+                        )}
+
+                        {/* Applicant can see & fill public forms */}
+                        {role === 'Applicant' && (
                             <button
                                 onClick={() => {
                                     if (isStandalonePage) {

@@ -40,8 +40,7 @@ const ReviewModal = ({ isOpen, onClose, response, onReviewAdded }) => {
 
     const payload = {
       responseId: response._id,
-      reviewerName: user?.adminName || user?.name || 'Admin',
-      reviewerRole: (user?.role || 'admin').toLowerCase(),
+      reviewerName: user?.adminName || user?.name || 'Reviewer',
       scores: cleanScores,
       comment
     };

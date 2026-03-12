@@ -1,12 +1,15 @@
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useProfile } from '@/pages/Profile/Shared/ProfileContext';
 
 export default function DashboardHeader() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
+  const { activeClub } = useProfile();
   const navigate = useNavigate();
 
   const clubName =
+    activeClub?.name ||
     user?.club?.name ||
     (() => {
       try {
@@ -26,13 +29,15 @@ export default function DashboardHeader() {
           </span>
 
        
-          <button
-            onClick={() => navigate('/profile/Admin')}
-            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-medium px-4 py-1.5 rounded-md transition-colors shadow-sm"
-          >
-            <span className="text-base leading-none">+</span>
-            Add Member
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => navigate('/profile/Admin')}
+              className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-medium px-4 py-1.5 rounded-md transition-colors shadow-sm"
+            >
+              <span className="text-base leading-none">+</span>
+              Add Member
+            </button>
+          )}
         </div>
       </div>
 

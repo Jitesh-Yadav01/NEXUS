@@ -50,7 +50,7 @@ export function EventCodeBlock() {
             <pre className="m-0">
               <code className="text-sm">
                 <span className="text-gray-400">const</span> <span className="text-white">eventConfig</span> <span className="text-gray-400">=</span> {"{\n"}
-                {"  "}<span className="text-gray-300">name</span><span className="text-gray-400">:</span> <span className="text-gray-400">"INNERVE"</span>{",\n"}
+                {"  "}<span className="text-gray-300">name</span><span className="text-gray-400">:</span> <span className="text-gray-400">"INNERVE X"</span>{",\n"}
                 {"  "}<span className="text-gray-300">tagline</span><span className="text-gray-400">:</span> <span className="text-gray-400">"India's Largest Student-Driven Hackathon"</span>{",\n"}
                 {"  "}<span className="text-gray-300">organizer</span><span className="text-gray-400">:</span> <span className="text-gray-400">"Open Source Software Club"</span>{",\n"}
                 {"  "}<span className="text-gray-300">location</span><span className="text-gray-400">:</span> <span className="text-gray-400">"Army Institute of Technology, Pune"</span>{",\n"}

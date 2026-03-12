@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
 // import { useView } from '@/context/ViewContext';
 import { ProfileProvider } from '../../Shared/ProfileContext';
 import SharedDashboardLayout from '../../Shared/DashboardLayout';
+import { useAuth } from '@/context/AuthContext';
 
 const MemberPanel = () => {
     const location = useLocation();
-    const navigate = useNavigate();
+    const { user } = useAuth();
     // const { setCurrentView } = useView();
 
     // useEffect(() => {
@@ -20,9 +21,20 @@ const MemberPanel = () => {
         } catch(e) { return null; }
     })();
 
-    const clubs = selectedClub
-        ? [{ id: selectedClub.abbr, name: selectedClub.name, abbr: selectedClub.abbr, logo: selectedClub.img, role: 'Member' }]
-        : [];
+    const memberClubs = (user?.clubs || []).map((club) => ({
+        id: club._id,
+        _id: club._id,
+        name: club.name,
+        abbr: club.abbr || club.name?.substring(0, 3).toUpperCase(),
+        logo: club.logo || club.img || "/clubprofiles/ns.png",
+        role: 'Member'
+    }));
+
+    const resolvedSelectedClub = selectedClub
+        ? memberClubs.find((club) => club.id === selectedClub.id || club._id === selectedClub._id || club.name === selectedClub.name)
+        : memberClubs[0] || null;
+
+    const clubs = resolvedSelectedClub ? [resolvedSelectedClub] : memberClubs;
 
     const initialData = {
         profile: { clubs },
