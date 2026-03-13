@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import ClubSelectDropdown from "./ClubSelectDropdown";
 import { useAuth } from "@/context/AuthContext";
+import GoogleAuthButton from "@/components/GoogleAuthButton";
 
 const API = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
@@ -102,6 +103,48 @@ const AuthSelection = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSuccess = async (result) => {
+    if (!selectedClub) {
+      toast.error("Please select an organisation first.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // result from GoogleAuthButton contains success, user, message
+      // the Backend token is already set in cookies by googleAuth context method
+      const verifyRes = await axios.post(
+        `${API}/api/auth/verify-membership`,
+        // Note: verify-membership needs clubId, we assume selectedClub is an object containing _id
+        { clubId: selectedClub._id }, 
+        { withCredentials: true }
+      );
+
+      if (verifyRes.data?.success) {
+        if (selectedClub && typeof selectedClub === "object") {
+          localStorage.setItem("enteredClub", JSON.stringify(selectedClub));
+        }
+        toast.success("Membership verified successfully! 👌");
+        setTimeout(() => {
+          navigate("/profile/Member", { state: { club: selectedClub } });
+        }, 1500);
+      } else {
+        toast.error(verifyRes.data?.message || "User is not a member of this organisation");
+        // We might want to clear token here if they are only logging in for this org, 
+        // but since this is a global token they just can't access this org.
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || err.message || "Failed to verify membership.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleError = (msg) => {
+    toast.error(msg || "Google login failed 🤯");
   };
 
   return (
@@ -216,66 +259,84 @@ const AuthSelection = () => {
                 </div>
               </div>
 
-              {/* Email */}
-              <div className="space-y-2">
-                <label
-                  htmlFor="org-email"
-                  className="text-sm font-medium text-slate-300 ml-1"
-                >
-                  Email
-                </label>
-                <input
-                  id="org-email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@organisation.com"
-                  className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent transition-all"
-                />
-              </div>
+              {/* Submit / Auth */}
+              {role === "admin" ? (
+                <>
+                  {/* Email */}
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="org-email"
+                      className="text-sm font-medium text-slate-300 ml-1"
+                    >
+                      Email
+                    </label>
+                    <input
+                      id="org-email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@organisation.com"
+                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent transition-all"
+                    />
+                  </div>
 
-              {/* Password */}
-              <div className="space-y-2">
-                <label
-                  htmlFor="org-password"
-                  className="text-sm font-medium text-slate-300 ml-1"
-                >
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    id="org-password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full px-4 py-3 pr-11 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
+                  {/* Password */}
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="org-password"
+                      className="text-sm font-medium text-slate-300 ml-1"
+                    >
+                      Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="org-password"
+                        type={showPassword ? "text" : "password"}
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="••••••••"
+                        className="w-full px-4 py-3 pr-11 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-white/20 focus:border-transparent transition-all"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="pt-1">
+                    <button
+                      type="submit"
+                      disabled={loading || !selectedClub}
+                      className="w-full py-3 rounded-xl bg-white text-black text-sm font-semibold hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Continue
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="pt-4 space-y-4">
+                  {selectedClub ? (
+                    <GoogleAuthButton
+                      onSuccess={handleGoogleSuccess}
+                      onError={handleGoogleError}
+                      label="Login as Member"
+                    />
+                  ) : (
+                    <div className="w-full py-3 rounded-xl bg-white/5 border border-dashed border-white/20 text-slate-400 text-sm text-center">
+                      Select an organisation to continue
+                    </div>
+                  )}
                 </div>
-              </div>
-
-              {/* Submit */}
-              <div className="pt-1">
-                <button
-                  type="submit"
-                  disabled={loading || !selectedClub}
-                  className="w-full py-3 rounded-xl bg-white text-black text-sm font-semibold hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  Continue
-                </button>
-              </div>
+              )}
             </form>
           </div>
         )}
