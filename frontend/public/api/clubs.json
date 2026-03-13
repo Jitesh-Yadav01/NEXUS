@@ -15,12 +15,9 @@
       "https://images.unsplash.com/photo-1517433456452-f9633a875f6f?auto=format&fit=crop&w=800&q=80"
     ],
     "activities": [
-    "INNERVE",
-    "FSOC",
-    "Graphica",
-    "Spark",
-    "Internal SIH",
-    "Replica"
+      "INNERVE",
+      "FSOC",
+      "Graphica"
     ],
     "who": "FE,SE"
   },
@@ -43,10 +40,7 @@
     "activities": [
       "Frontend Jams",
       "Backend Jams",
-      "FSOC",
-      "Enliven",
-      "Google Cloud Workshop",
-      "Android Development Session"
+      "FSOC"
     ],
     "who": "FE,SE"
   },
@@ -69,8 +63,7 @@
     "activities": [
       "CODEFT 4.0",
       "CRACK 5.1",
-      "CRACK 5.2",
-      "KICKSTARTER"
+      "CRACK 5.2"
     ],
     "who": "FE,SE"
   },
@@ -124,7 +117,11 @@
       "AR/VR development",
       "3D modeling & interaction"
     ],
-    "activities": ["● GameJam", "● XR Workshop", "● Dev Sprints"],
+    "activities": [
+      "GameJam",
+      "XR Workshop",
+      "Dev Sprints"
+    ],
     "who": "FE,SE"
   },
 
