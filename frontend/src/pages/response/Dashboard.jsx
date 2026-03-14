@@ -385,6 +385,12 @@ const Dashboard = ({ viewerRole = 'admin' }) => {
                    const answers = selectedApplicant.answers || {};
                    const currentDecision = selectedApplicant.decision || 'pending';
 
+                   let displayPriority = selectedApplicant.priority;
+                   if (!displayPriority && answers) {
+                       const pKey = Object.keys(answers).find(k => k.toLowerCase().includes('priority'));
+                       if (pKey) displayPriority = answers[pKey];
+                   }
+
                    return (
                       <div className="w-full h-full p-6 space-y-6 pb-8">
                          {/* Header Profile Area */}
@@ -400,6 +406,14 @@ const Dashboard = ({ viewerRole = 'admin' }) => {
                                      <span className="text-slate-300">•</span>
                                      <span>{getAnswerValue(answers, 'Phone')}</span>
                                   </div>
+                                  {displayPriority && (
+                                   <div className="flex items-center gap-2 mt-2">
+                                     <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">Priority</span>
+                                     <span className="inline-flex items-center rounded-md border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-bold text-blue-700 shadow-sm uppercase">
+                                       Preference #{displayPriority}
+                                     </span>
+                                   </div>
+                               )}
                                </div>
                             </div>
                             
@@ -478,20 +492,22 @@ const Dashboard = ({ viewerRole = 'admin' }) => {
 
                          {/* Form Answers Section */}
                          <div>
-                            <h3 className="text-base font-semibold tracking-tight mb-3">Application Details</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 rounded border border-slate-200 bg-white shadow-sm p-5">
+                            <h3 className="text-base font-semibold tracking-tight mb-3">Application Details</h3>                            
+                             <div className="flex flex-wrap gap-6 rounded-lg border border-slate-200 bg-white shadow-sm p-6">
                                {Object.entries(answers).map(([key, val]) => {
-                                  if (key.toLowerCase().includes('name') || 
-                                      key.toLowerCase().includes('email') || 
-                                      key.toLowerCase().includes('phone')) return null;
+                                  const isPriorityField = key.toLowerCase().includes('priority');
+                                  let actualVal = val;
+                                  if (isPriorityField && !val && displayPriority) {
+                                      actualVal = displayPriority;
+                                  }
 
-                                  const answerStr = String(val);
-                                  const isLongText = answerStr.length > 60;
+                                  const answerStr = String(actualVal || '-');
+                                  const isLongText = answerStr.length > 50;
 
                                   return (
-                                     <div key={key} className={`space-y-2.5 ${isLongText ? 'col-span-1 md:col-span-2' : ''}`}>
-                                        <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">{key}</div>
-                                        <div className="text-sm font-medium text-slate-900 wrap-break-word leading-relaxed">{answerStr}</div>
+                                     <div key={key} className={`space-y-1.5 ${isLongText ? 'w-full' : 'flex-1 min-w-[150px]'}`}>
+                                        <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{key}</div>
+                                        <div className="text-[13px] font-medium text-slate-900 wrap-break-word leading-relaxed whitespace-pre-wrap">{answerStr}</div>
                                      </div>
                                   );
                                })}
