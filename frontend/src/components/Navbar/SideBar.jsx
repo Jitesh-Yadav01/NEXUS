@@ -110,10 +110,10 @@ export default function SideBar({ open, onClose, onOpenLogin }) {
           <div className="mt-auto pt-8 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
             {user ? (
               <Button
-                onClick={() => {
-                  logout();
+                onClick={async () => {
+                  await logout();
                   onClose();
-                  navigate('/');
+                  navigate('/', { replace: true });
                 }}
                 variant="outline"
                 className="w-full h-11 rounded-xl border-red-100 dark:border-red-900/30 hover:bg-red-50 dark:hover:bg-red-950/30 text-red-600 font-medium justify-center gap-2 transition-all duration-200"

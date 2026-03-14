@@ -5,6 +5,7 @@ import { ProfileProvider } from '../../Shared/ProfileContext';
 import SharedDashboardLayout from '../../Shared/DashboardLayout';
 import { useAuth } from '@/context/AuthContext';
 
+
 const AdminPanel = () => {
     const location = useLocation();
     const navigate = useNavigate();

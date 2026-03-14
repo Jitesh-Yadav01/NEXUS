@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useProfile } from './ProfileContext';
 import SharedOverview from './SharedOverview';
 import SharedMembers from './SharedMembers';
@@ -36,19 +36,14 @@ export default function SharedDashboardLayout({ children }) {
         setIsSidebarOpen(false);
         const API = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
         try {
-            await toast.promise(
-                axios.post(`${API}/api/admin/logout`, {}, { withCredentials: true }),
-                {
-                    pending: 'Signing out...',
-                    success: 'Signed out successfully! 👋',
-                    error: 'Logout request failed, signing out anyway.',
-                }
-            );
+            if (role === 'Admin') {
+                await axios.post(`${API}/api/admin/logout`, {}, { withCredentials: true });
+            }
         } catch (_) {
-            // fail silently — still navigate home
         } finally {
-            logout();
-            navigate('/');
+            await logout();
+            toast.success('Signed out successfully! 👋');
+            navigate('/', { replace: true });
         }
     };
 
@@ -100,20 +95,7 @@ export default function SharedDashboardLayout({ children }) {
     }
 
     if (!user && role !== 'Admin') {
-         return (
-            <div className="flex min-h-screen items-center justify-center bg-gray-50">
-                <div className="bg-white p-8 rounded-xl shadow-sm border text-center">
-                    <h2 className="text-xl font-bold text-red-600 mb-2">Authentication Required</h2>
-                    <p className="text-gray-600 mb-4">You need to log in to access this page.</p>
-                     <button
-                        onClick={() => navigate('/login')}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                    >
-                        Go to Login
-                    </button>
-                </div>
-            </div>
-        );
+        return <Navigate to="/" replace />;
     }
 
     return (
