@@ -24,7 +24,7 @@ export function Footer() {
               <img 
                 src="/nexus.svg" 
                 alt="NEXUS Logo" 
-                className=" relative top-[3px] rounded-full" 
+                className=" relative w-[50px] top-[3px] rounded-full" 
               />
 
             </Link>
