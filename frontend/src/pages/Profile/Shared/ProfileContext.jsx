@@ -22,7 +22,12 @@ export const ProfileProvider = ({ children, initialData, role }) => {
     const [tasks, setTasks] = useState(initialData.tasks);
     const [messages, setMessages] = useState(initialData.messages);
     const [notifications, setNotifications] = useState(initialData.notifications);
-    const [activeTab, setActiveTab] = useState(location.state?.activeTab || (role === 'Applicant' ? 'messages' : 'overview'));
+    const getDefaultTab = () => {
+        if (role === 'Admin') return 'overview';
+        if (role === 'Member') return 'overview';
+        return 'my-clubs'; 
+    };
+    const [activeTab, setActiveTab] = useState(location.state?.activeTab || getDefaultTab());
     const [activeClub, setActiveClub] = useState(profile.clubs?.[0] || null);
     // const { setCurrentView } = useView();
 

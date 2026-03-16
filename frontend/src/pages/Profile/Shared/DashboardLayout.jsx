@@ -76,7 +76,7 @@ export default function SharedDashboardLayout({ children }) {
             case 'my-clubs': return <SharedMyClubs />;
             case 'manage-forms': return <MyForms />;
             case 'responses': return <Dashboard viewerRole={role === 'Admin' ? 'admin' : 'member'} isEmbedded={true} />;
-            default: return <SharedOverview />;
+            default: return role === 'Admin' ? <SharedOverview /> : <SharedMyClubs />;
         }
     };
 
